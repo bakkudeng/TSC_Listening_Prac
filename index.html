@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TSC 2주 단기 완성 집중 훈련 (Part 2~6)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur border-b border-slate-200 dark:border-slate-800 px-4 py-3 shadow-sm">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white shadow-md">
+          <i class="ph-bold ph-calendar-check text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold leading-tight text-slate-900 dark:text-white">TSC 14-Day Challenge</h1>
+          <span class="text-xs font-medium text-slate-500 dark:text-slate-400">전 파트(2~6부분) 실전 마스터</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="text-right hidden sm:block mr-2">
+          <div class="text-xs font-bold text-slate-500 dark:text-slate-400">학습 진행률</div>
+          <div class="text-sm font-bold text-brand-600 dark:text-brand-400" id="overallProgressText">0%</div>
+        </div>
+        <button id="themeToggleBtn" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+          <i class="ph-bold ph-moon dark:hidden text-lg"></i>
+          <i class="ph-bold ph-sun hidden dark:block text-lg text-amber-400"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    <!-- Left Sidebar: 14 Days Curriculum Grid -->
+    <aside class="lg:col-span-4 flex flex-col gap-4">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm">
+        <h2 class="text-sm font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2">
+          <i class="ph-fill ph-map-trifold text-brand-500 text-lg"></i> 2주 커리큘럼
+        </h2>
+        <div class="grid grid-cols-5 sm:grid-cols-7 lg:grid-cols-4 gap-2" id="daysGrid">
+          <!-- Days populated by JS -->
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+          <span class="text-xs text-slate-500">진행도 초기화</span>
+          <button onclick="resetProgress()" class="text-xs font-semibold text-rose-500 hover:text-rose-600 flex items-center gap-1">
+            <i class="ph-bold ph-arrow-counter-clockwise"></i> Reset
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Main Area: Question & Training View -->
+    <section class="lg:col-span-8 flex flex-col gap-4">
+      
+      <!-- Day Header -->
+      <div class="bg-brand-50 dark:bg-brand-900/20 border border-brand-100 dark:border-brand-800/50 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <span class="inline-block px-2.5 py-1 rounded-lg bg-brand-100 dark:bg-brand-800 text-brand-700 dark:text-brand-300 text-xs font-bold mb-1" id="currentDayBadge">Day 1</span>
+          <h2 class="text-lg font-bold text-slate-900 dark:text-white" id="currentDayTitle">학습 주제</h2>
+        </div>
+        <button onclick="markDayComplete()" id="completeDayBtn" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold shadow-md transition-transform active:scale-95 flex items-center justify-center gap-2">
+          <i class="ph-bold ph-check-circle"></i> <span>오늘 학습 완료</span>
+        </button>
+      </div>
+
+      <!-- Question Content Area -->
+      <div id="questionsContainer" class="flex flex-col gap-6">
+        <!-- Questions injected via JS -->
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    /* ==========================================
+       14-DAY CURRICULUM DATA (Parts 2 to 6)
+       ========================================== */
+    const CURRICULUM = [
+      {
+        day: 1,
+        title: "Part 2: 사물 위치와 진행 동작",
+        questions: [
+          {
+            part: 2, type: "위치",
+            chinese: "请问，电脑在什么地方？", pinyin: "Qǐngwèn, diànnǎo zài shénme dìfang?",
+            korean: "컴퓨터는 어디에 있습니까?",
+            tip: "在什么地方(어디에) 캐치. [주어 + 在 + 장소] 구조로 단답형 대답.",
+            modelAnswer: "电脑在桌子上面。"
+          },
+          {
+            part: 2, type: "진행 동작",
+            chinese: "图片中的那个人在做什么？", pinyin: "Túpiàn zhōng de nà ge rén zài zuò shénme?",
+            korean: "사진 속 저 사람은 무엇을 하고 있습니까?",
+            tip: "在做什么(무엇을 하는 중인가) 캐치. [주어 + 正在 + 동사] 활용.",
+            modelAnswer: "他正在打电话。"
+          }
+        ]
+      },
+      {
+        day: 2,
+        title: "Part 2: 수량과 날씨 파악",
+        questions: [
+          {
+            part: 2, type: "수량",
+            chinese: "桌子上有几本书？", pinyin: "Zhuōzi shang yǒu jǐ běn shū?",
+            korean: "책상 위에 책이 몇 권 있습니까?",
+            tip: "几本(몇 권) 캐치. 정확한 양사(本)를 넣어 숫자 대답.",
+            modelAnswer: "桌子上有三本书。"
+          },
+          {
+            part: 2, type: "날씨",
+            chinese: "现在外面的天气怎么样？", pinyin: "Xiànzài wàimiàn de tiānqì zěnmeyàng?",
+            korean: "지금 밖의 날씨는 어떻습니까?",
+            tip: "天气怎么样(날씨가 어떤가) 캐치. 춥다/비온다/맑다 중 택 1.",
+            modelAnswer: "现在外面下着大雨。"
+          }
+        ]
+      },
+      {
+        day: 3,
+        title: "Part 3: 제안 수락 및 일정 확인",
+        questions: [
+          {
+            part: 3, type: "제안 수락",
+            chinese: "今天下班以后，我们一起去吃烤肉，怎么样？", pinyin: "Jīntiān xiàbān yǐhòu, wǒmen yìqǐ qù chī kǎoròu, zěnmeyàng?",
+            korean: "퇴근 후 고기 구워 먹으러 가는 거 어때요?",
+            tip: "怎么样?(어때?)로 끝나면 즉시 수락(太好了) 후 구체적 약속 제시.",
+            modelAnswer: "太好了！我正想吃烤肉呢。我们六点半在公司门口见吧。"
+          },
+          {
+            part: 3, type: "일정 확인",
+            chinese: "请问，今天的会议几点开始？", pinyin: "Qǐngwèn, jīntiān de huìyì jǐ diǎn kāishǐ?",
+            korean: "오늘 회의는 몇 시에 시작하나요?",
+            tip: "几点开始(몇시 시작) 캐치. 시간과 장소를 명확히 대답.",
+            modelAnswer: "今天的会议下午两点在三楼会议室开始，请准时参加。"
+          }
+        ]
+      },
+      {
+        day: 4,
+        title: "Part 3: 선택 의문문과 완곡한 거절",
+        questions: [
+          {
+            part: 3, type: "선택",
+            chinese: "你想喝冰咖啡还是热咖啡？", pinyin: "Nǐ xiǎng hē bīng kāfēi háishi rè kāfēi?",
+            korean: "아이스 커피와 따뜻한 커피 중 무엇을 마실래요?",
+            tip: "还是(아니면) 캐치. 둘 중 하나를 선택하고 간단한 이유 추가.",
+            modelAnswer: "我想喝冰咖啡。因为今天天气有点热，喝冰的比较舒服。"
+          },
+          {
+            part: 3, type: "거절",
+            chinese: "周末我们一起去爬山好吗？", pinyin: "Zhōumò wǒmen yìqǐ qù páshān hǎo ma?",
+            korean: "주말에 같이 등산 갈까요?",
+            tip: "거절할 때는 반드시 사과(不好意思) + 핑계(야근/약속) + 대안 구조 사용.",
+            modelAnswer: "真不好意思，这周末我要加班。下个周末我们再去，好吗？"
+          }
+        ]
+      },
+      {
+        day: 5,
+        title: "Part 4: 취미와 여가 (만능 패턴)",
+        questions: [
+          {
+            part: 4, type: "주말 활동",
+            chinese: "你在周末通常喜欢做些什么？为什么？", pinyin: "Nǐ zài zhōumò tōngcháng xǐhuan zuò xiē shénme? Wèishénme?",
+            korean: "주말에 보통 무엇을 즐겨 하며, 이유는 무엇인가요?",
+            tip: "스트레스 해소(放松心情) 만능 답변 활용. [활동] + [스트레스가 풀린다].",
+            modelAnswer: "周末我通常去跑步。因为平时工作压力大，运动不仅能锻炼身体，还能让我彻底放松心情。"
+          }
+        ]
+      },
+      {
+        day: 6,
+        title: "Part 4: 선호도 서술 (계절/날씨)",
+        questions: [
+          {
+            part: 4, type: "선호 계절",
+            chinese: "一年四季中，你最喜欢哪一个季节？", pinyin: "Yì nián sìjì zhōng, nǐ zuì xǐhuan nǎ yí ge jìjié?",
+            korean: "사계절 중 가장 좋아하는 계절은 무엇입니까?",
+            tip: "가을(秋天) 선택이 유리. 춥지도 덥지도 않고(不冷也不热) 여행가기 좋다는 논리 전개.",
+            modelAnswer: "我最喜欢秋天。因为秋天的天气不冷也不热，非常凉爽，而且风景很美，很适合去户外旅行。"
+          }
+        ]
+      },
+      {
+        day: 7,
+        title: "Part 4: 스트레스 해소법",
+        questions: [
+          {
+            part: 4, type: "스트레스 관리",
+            chinese: "工作压力大的时候，你会用什么方法来缓解压力？", pinyin: "Gōngzuò yālì dà de shíhou, nǐ huì yòng shénme fāngfǎ lái huǎnjiě yālì?",
+            korean: "업무 스트레스가 클 때, 어떤 방법으로 스트레스를 푸나요?",
+            tip: "缓解压力(스트레스 해소) 캐치. 맛있는 음식 먹기(吃美食) 또는 운동(运动)으로 전개.",
+            modelAnswer: "压力大的时候，我通常会去吃一顿大餐。吃好吃的东西能让我忘记烦恼，心情马上变得很好。"
+          }
+        ]
+      },
+      {
+        day: 8,
+        title: "Part 5: 논리 비교 (온라인 vs 오프라인)",
+        questions: [
+          {
+            part: 5, type: "쇼핑 방식 비교",
+            chinese: "有人喜欢去实体店买东西，有人喜欢在网上购物。你更倾向于哪一种？请谈谈你的看法。", pinyin: "Yǒu rén xǐhuan qù shítǐdiàn mǎi dōngxi, yǒu rén xǐhuan zài wǎngshàng gòuwù. Nǐ gèng qīngxiàng yú nǎ yì zhǒng?",
+            korean: "오프라인 매장 쇼핑과 온라인 쇼핑 중 어느 것을 더 선호합니까?",
+            tip: "온라인 쇼핑(网上购物)의 편리함(方便)과 시간 절약(节省时间)을 근거로 제시.",
+            modelAnswer: "我更倾向于在网上购物。首先，网络购物非常方便，只要动动手指就能送货到家，节省了大量的时间。其次，网上的商品种类丰富，价格通常也比实体店更便宜。所以网购对我更有吸引力。"
+          }
+        ]
+      },
+      {
+        day: 9,
+        title: "Part 5: 찬반 논리 (재택근무)",
+        questions: [
+          {
+            part: 5, type: "재택근무 찬반",
+            chinese: "现在很多人选择在家里远程办公。你赞成还是反对这种工作方式？为什么？", pinyin: "Xiànzài hěn duō rén xuǎnzé zài jiālǐ yuǎnchéng bàngōng. Nǐ zànchéng háishi fǎnduì zhè zhǒng gōngzuò fāngshì? Wèishénme?",
+            korean: "재택 원격 근무에 대해 찬성합니까, 반대합니까? 이유는 무엇인가요?",
+            tip: "찬성(赞成) 포지션. 출퇴근 시간 절약(省去通勤时间) 및 효율 증가(提高效率) 근거 활용.",
+            modelAnswer: "我非常赞成在家远程办公。第一，这样可以省去每天上下班的通勤时间，减少疲劳。第二，在熟悉舒适的环境中工作，工作效率往往更高。所以它是一种很现代的工作模式。"
+          }
+        ]
+      },
+      {
+        day: 10,
+        title: "Part 5: 선호도 논리 (외식 vs 집밥)",
+        questions: [
+          {
+            part: 5, type: "식사 방식 비교",
+            chinese: "有人喜欢在家里做饭，有人喜欢去餐厅吃饭。你更喜欢哪一种？", pinyin: "Yǒu rén xǐhuan zài jiālǐ zuòfàn, yǒu rén xǐhuan qù cāntīng chīfàn. Nǐ gèng xǐhuan nǎ yì zhǒng?",
+            korean: "집에서 요리하는 것과 식당에서 외식하는 것 중 어느 것을 선호하나요?",
+            tip: "집밥(在家里做饭)의 건강함(健康)과 위생(干净) 혹은 외식(去餐厅吃饭)의 편리함(方便) 중 하나로 2가지 근거 마련.",
+            modelAnswer: "我更喜欢去餐厅吃饭。首先，平时工作太忙，去餐厅吃饭能节省很多买菜和做饭的时间。其次，餐厅有很多不同的菜品可以选择，味道也很好。虽然在家里做饭比较健康，但去餐厅更方便。"
+          }
+        ]
+      },
+      {
+        day: 11,
+        title: "Part 6: 돌발 대처 (약속 취소 및 사과)",
+        questions: [
+          {
+            part: 6, type: "사과 및 대안 제시",
+            chinese: "你和朋友约好今晚一起看电影，但你突然需要加班。请给朋友打电话，说明情况并向他道歉。", pinyin: "Nǐ hé péngyou yuēhǎo jīnwǎn yìqǐ kàn diànyǐng, dàn nǐ tūrán xūyào jiābān. Qǐng gěi péngyou dǎ diànhuà, shuōmíng qíngkuàng bìng xiàng tā dàoqiàn.",
+            korean: "오늘 저녁 친구와 영화를 보려 했으나 갑자기 야근을 해야 합니다. 전화로 사과하세요.",
+            tip: "인사(喂) + 상황 설명(야근 加班) + 진심 어린 사과(真不好意思) + 밥 사겠다는 대안(请你吃饭).",
+            modelAnswer: "喂，小张啊，真是不好意思！我本来打算和你一起去看电影的，但是公司临时通知今晚必须加班。今天实在去不了了，非常抱歉。这周末我重新买票请你看电影，然后再请你吃大餐，向你赔礼道歉，你看行吗？"
+          }
+        ]
+      },
+      {
+        day: 12,
+        title: "Part 6: 돌발 대처 (교환/환불 요청)",
+        questions: [
+          {
+            part: 6, type: "하자 상품 환불",
+            chinese: "你在商场买了一件衣服，回家后发现衣服上有破洞。请回到商场向店员说明情况并要求换货或退款。", pinyin: "Nǐ zài shāngchǎng mǎi le yí jiàn yīfu, huíjiā hòu fāxiàn yīfu shang yǒu pòdòng. Qǐng huídào shāngchǎng xiàng diànyuán shuōmíng qíngkuàng bìng yāoqiú huànhuò huò tuìkuǎn.",
+            korean: "옷에 구멍이 난 것을 발견했습니다. 매장 직원에게 교환이나 환불을 요구하세요.",
+            tip: "인사(你好) + 상황(구멍 破洞) + 영수증 제시(小票) + 교환 또는 환불 요구(换一件或者退款).",
+            modelAnswer: "你好，服务员。我刚才在你们店里买了这件衣服，但是回家打开一看，发现袖子这里有一个破洞。这是我的购物小票。请问可以帮我换一件新的吗？如果现在没有同款的现货，麻烦帮我办理退款，谢谢。"
+          }
+        ]
+      },
+      {
+        day: 13,
+        title: "Mini Mock Test 1 (Part 2, 3, 4)",
+        questions: [
+          {
+            part: 2, type: "교통수단",
+            chinese: "那个女孩是怎么去学校的？", pinyin: "Nà ge nǚhái shì zěnme qù xuéxiào de?",
+            korean: "저 소녀는 학교에 어떻게 가고 있습니까?", tip: "[주어 + 骑自行车(자전거를 타다) + 去学校] 구조 사용.",
+            modelAnswer: "那个女孩是骑自行车去学校的。"
+          },
+          {
+            part: 3, type: "시간 확인",
+            chinese: "明天的会议改到下午三点，你看行吗？", pinyin: "Míngtiān de huìyì gǎi dào xiàwǔ sān diǎn, nǐ kàn xíng ma?",
+            korean: "내일 회의를 오후 3시로 변경해도 될까요?", tip: "行(좋다) + 알겠다(知道了) 구조.",
+            modelAnswer: "行，没问题。我会准时参加下午三点的会议。"
+          },
+          {
+            part: 4, type: "선물",
+            chinese: "朋友过生日的时候，你一般会送什么礼物？", pinyin: "Péngyou guò shēngrì de shíhou, nǐ yìbān huì sòng shénme lǐwù?",
+            korean: "친구가 생일일 때 보통 어떤 선물을 합니까?", tip: "실용적인 것(实用的东西) 위주 서술.",
+            modelAnswer: "我一般会送香水或者衣服。因为这些礼物很实用，朋友每天都能用到，他们收到后都会很高兴。"
+          }
+        ]
+      },
+      {
+        day: 14,
+        title: "Mini Mock Test 2 (Part 5, 6)",
+        questions: [
+          {
+            part: 5, type: "전자책 vs 종이책",
+            chinese: "有人喜欢看电子书，有人喜欢看纸质书。你更倾向于哪一种？", pinyin: "Yǒu rén xǐhuan kàn diànzǐshū, yǒu rén xǐhuan kàn zhǐzhìshū. Nǐ gèng qīngxiàng yú nǎ yì zhǒng?",
+            korean: "전자책과 종이책 중 어느 것을 더 선호하나요?", tip: "전자책(电子书)의 휴대성(方便携带)을 강조.",
+            modelAnswer: "我更倾向于看电子书。首先，电子书非常轻便，走到哪里都可以用手机或平板看，节省了空间。其次，电子书的价格往往比纸质书便宜。因此，电子书更适合我。"
+          },
+          {
+            part: 6, type: "휴가 요청",
+            chinese: "你突然生病了，不能去公司上班。请给老板打电话请假。", pinyin: "Nǐ tūrán shēngbìng le, bùnéng qù gōngsī shàngbān. Qǐng gěi lǎobǎn dǎ diànhuà qǐngjià.",
+            korean: "갑자기 병에 걸려 출근할 수 없습니다. 사장님께 전화하여 휴가를 요청하세요.", tip: "인사(老板好) + 증상(发烧/感冒) + 하루 휴가 요청(请一天的假).",
+            modelAnswer: "老板，您好，真对不起，这么早打扰您。我今天早上突然发高烧，现在感觉非常不舒服，实在没法去公司上班了。我想向您请一天的病假，去医院看一看。工作的事情我已经交接给同事了，请您批准。"
+          }
+        ]
+      }
+    ];
+
+    /* ==========================================
+       APP STATE & LOGIC
+       ========================================== */
+    let currentDayIndex = 0;
+    let completedDays = JSON.parse(localStorage.getItem('tsc_14day_allparts')) || [];
+    let currentUtterance = null;
+    
+    // Web Speech API Initialization
+    let zhVoice = null;
+    function initSpeech() {
+      if ('speechSynthesis' in window) {
+        const loadVoices = () => {
+          const voices = window.speechSynthesis.getVoices();
+          zhVoice = voices.find(v => v.lang === 'zh-CN' || v.lang === 'zh_CN') ||
+                    voices.find(v => v.lang.startsWith('zh')) || null;
+        };
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+      }
+    }
+
+    // Bulletproof Text-to-Speech to prevent GC bugs on long sentences
+    function speakText(text, rate = 1.0) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      
+      setTimeout(() => {
+        currentUtterance = new SpeechSynthesisUtterance(text);
+        currentUtterance.lang = 'zh-CN';
+        currentUtterance.rate = rate;
+        if (zhVoice) currentUtterance.voice = zhVoice;
+        
+        currentUtterance.onend = () => { currentUtterance = null; };
+        currentUtterance.onerror = () => { currentUtterance = null; };
+        
+        window.speechSynthesis.speak(currentUtterance);
+      }, 30);
+    }
+
+    // UI Rendering
+    function renderDaysGrid() {
+      const grid = document.getElementById('daysGrid');
+      grid.innerHTML = '';
+      
+      CURRICULUM.forEach((dayData, index) => {
+        const isCompleted = completedDays.includes(index);
+        const isCurrent = index === currentDayIndex;
+        
+        const btn = document.createElement('button');
+        btn.className = `p-2 rounded-xl text-xs font-bold transition-all border flex flex-col items-center justify-center gap-1 ${
+          isCurrent ? 'bg-brand-600 border-brand-600 text-white shadow-md' :
+          isCompleted ? 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/30 dark:border-emerald-800 dark:text-emerald-400' :
+          'bg-white border-slate-200 text-slate-600 hover:border-brand-300 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300'
+        }`;
+        btn.onclick = () => loadDay(index);
+        
+        btn.innerHTML = `
+          <span>D-${dayData.day}</span>
+          ${isCompleted ? '<i class="ph-fill ph-check-circle text-base"></i>' : '<i class="ph-bold ph-lock-key-open text-base opacity-40"></i>'}
+        `;
+        grid.appendChild(btn);
+      });
+
+      // Update Overall Progress
+      const pct = Math.round((completedDays.length / 14) * 100);
+      document.getElementById('overallProgressText').textContent = `${pct}%`;
+    }
+
+    function loadDay(index) {
+      currentDayIndex = index;
+      const data = CURRICULUM[index];
+      
+      document.getElementById('currentDayBadge').textContent = `Day ${data.day}`;
+      document.getElementById('currentDayTitle').textContent = data.title;
+      
+      const btn = document.getElementById('completeDayBtn');
+      if (completedDays.includes(index)) {
+        btn.className = 'px-4 py-2 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 text-sm font-bold flex items-center justify-center gap-2 cursor-default';
+        btn.innerHTML = '<i class="ph-fill ph-check-circle"></i> <span>완료된 학습</span>';
+        btn.disabled = true;
+      } else {
+        btn.className = 'px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold shadow-md transition-transform active:scale-95 flex items-center justify-center gap-2';
+        btn.innerHTML = '<i class="ph-bold ph-check-circle"></i> <span>오늘 학습 완료</span>';
+        btn.disabled = false;
+      }
+
+      const container = document.getElementById('questionsContainer');
+      container.innerHTML = '';
+
+      data.questions.forEach((q, qIdx) => {
+        const card = document.createElement('div');
+        card.className = 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm';
+        
+        // Define color tag based on part
+        const partColors = {
+          2: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200',
+          3: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200',
+          4: 'bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-200',
+          5: 'bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900 dark:text-fuchsia-200',
+          6: 'bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-200'
+        };
+        const partTagColor = partColors[q.part] || 'bg-slate-100 text-slate-700';
+
+        card.innerHTML = `
+          <div class="p-4 sm:p-5 flex flex-col gap-4">
+            <div class="flex justify-between items-start">
+              <span class="text-xs font-bold ${partTagColor} px-2.5 py-1 rounded-md">Q${qIdx + 1} | Part ${q.part} (${q.type})</span>
+              <button onclick="speakText('${q.chinese}')" class="w-10 h-10 rounded-full bg-brand-50 dark:bg-slate-700 text-brand-600 dark:text-brand-400 hover:bg-brand-100 flex items-center justify-center transition-colors" title="질문 듣기">
+                <i class="ph-fill ph-speaker-high text-xl"></i>
+              </button>
+            </div>
+            
+            <div class="space-y-1">
+              <p class="text-lg font-bold text-slate-900 dark:text-white tracking-wide leading-relaxed">${q.chinese}</p>
+              <p class="text-sm font-mono text-slate-500 dark:text-slate-400">${q.pinyin}</p>
+              <p class="text-sm text-slate-600 dark:text-slate-300 pt-1 border-t border-slate-100 dark:border-slate-700 mt-2">${q.korean}</p>
+            </div>
+
+            <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl p-3 text-xs text-amber-900 dark:text-amber-200 flex gap-2">
+              <i class="ph-fill ph-lightbulb text-amber-500 text-sm shrink-0 mt-0.5"></i>
+              <span>${q.tip}</span>
+            </div>
+
+            <div class="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mt-2">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1"><i class="ph-fill ph-check-circle"></i> 모범 답변 (섀도잉 추천)</span>
+                <button onclick="speakText('${q.modelAnswer}', 0.95)" class="text-xs text-brand-600 hover:underline flex items-center gap-1 font-semibold"><i class="ph-bold ph-play"></i> 듣기</button>
+              </div>
+              <p class="text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed">${q.modelAnswer}</p>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+      
+      renderDaysGrid();
+    }
+
+    function markDayComplete() {
+      if (!completedDays.includes(currentDayIndex)) {
+        completedDays.push(currentDayIndex);
+        localStorage.setItem('tsc_14day_allparts', JSON.stringify(completedDays));
+        loadDay(currentDayIndex); // Refresh UI
+      }
+    }
+
+    function resetProgress() {
+      if (confirm("학습 진행도를 초기화하시겠습니까?")) {
+        completedDays = [];
+        localStorage.removeItem('tsc_14day_allparts');
+        loadDay(0);
+      }
+    }
+
+    // Theme Toggle Logic
+    document.getElementById('themeToggleBtn').addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+    });
+
+    // Init
+    window.onload = () => {
+      initSpeech();
+      // Load last uncompleted day or Day 1
+      let startDay = 0;
+      for (let i = 0; i < CURRICULUM.length; i++) {
+        if (!completedDays.includes(i)) {
+          startDay = i;
+          break;
+        }
+      }
+      loadDay(startDay);
+    };
+  </script>
+</body>
+</html>
